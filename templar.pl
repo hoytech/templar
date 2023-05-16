@@ -264,7 +264,7 @@ namespace [% cppNamespace %] {
 [%- FOREACH file IN files %]
 // [% file.pathNice %]::[% file.filename %]()
 [% FOREACH p IN file.path %]namespace [% p %] { [% END -%]
-template<typename TCtx> inline std::string [% file.filename %](const TCtx &ctx);
+template<typename TCtx> inline std::string [% file.filename %]([[maybe_unused]]const TCtx &ctx);
 [%- END -%]
 [% FOREACH p IN file.path %] }[%- END %]
 
@@ -273,7 +273,7 @@ template<typename TCtx> inline std::string [% file.filename %](const TCtx &ctx);
 [%- FOREACH file IN files %]
 // [% file.pathNice %]::[% file.filename %]()
 [% FOREACH p IN file.path %]namespace [% p %] { [% END %]
-template<typename TCtx> inline std::string [% file.filename %](const TCtx &ctx) {
+template<typename TCtx> inline std::string [% file.filename %]([[maybe_unused]]const TCtx &ctx) {
     std::string out;
 
 [% file.contents %]

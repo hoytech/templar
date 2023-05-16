@@ -20,7 +20,7 @@ our $replacementParser;
                 \< \s* <oTagName=tagName> \s* <attrList> /?+ \s* \>
                     <tagModifierPre=tagModifier>?
                     <beforeInner=text> <[tag]>* %% <[sep=text]>
-                (?: \< \s*+ / \s*+ (?:(?i)<cTagName=\_oTagName>) \s*+ \> | <error: (?{ "Expected closing tag found for tag <$MATCH{oTagName}>" })> )
+                (?: \< \s*+ / \s*+ (?:(?i)<cTagName=\_oTagName>) \s*+ \> | <error: (?{ "Expected closing tag for <$MATCH{oTagName}>" })> )
                 |
                 \< \s* <vTagName=voidTagName> \s* <attrList> /?+ \s* \>
             )
