@@ -17,5 +17,5 @@ int main() {
         bool showSomething = false;
     } stuff;
 
-    std::cout << tmpl::frame(stuff) << std::endl;
+    std::cout << tmpl::frame(stuff).str << std::endl;
 }

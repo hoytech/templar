@@ -215,6 +215,10 @@ __DATA__
 #include <string_view>
 
 namespace tmplInternal {
+    struct Result {
+        std::string str;
+    };
+
     inline std::string htmlEscape(std::string_view data, bool escapeQuotes) {
         std::string buffer;
         buffer.reserve(data.size() * 11 / 10);
@@ -244,17 +248,22 @@ namespace tmplInternal {
         return buffer;
     }
 
-    inline void appendRaw(std::string &out, std::string_view val) { out += val; }
-    inline void appendRaw(std::string &out, const std::string &val) { out += val; }
-    inline void appendRaw(std::string &out, const char *val) { out += val; }
-    template<typename TVal>
-    inline void appendEscape(std::string &out, TVal val) { out += std::to_string(val); }
+    // Regular appends (with escaping)
 
     inline void appendEscape(std::string &out, std::string_view val, bool escapeQuotes) { out += htmlEscape(val, escapeQuotes); }
     inline void appendEscape(std::string &out, const std::string &val, bool escapeQuotes) { out += htmlEscape(val, escapeQuotes); }
     inline void appendEscape(std::string &out, const char *val, bool escapeQuotes) { out += htmlEscape(val, escapeQuotes); }
+    inline void appendEscape(std::string &out, const ::tmplInternal::Result &val, bool escapeQuotes) { out += htmlEscape(val.str, escapeQuotes); }
     template<typename TVal>
     inline void appendEscape(std::string &out, TVal val, bool escapeQuotes) { out += htmlEscape(std::to_string(val), escapeQuotes); }
+
+    // Raw appends (danger: no escaping)
+
+    inline void appendRaw(std::string &out, std::string_view val) { out += val; }
+    inline void appendRaw(std::string &out, const std::string &val) { out += val; }
+    inline void appendRaw(std::string &out, const char *val) { out += val; }
+    template<typename TVal>
+    inline void appendRaw(std::string &out, TVal val) { out += std::to_string(val); }
 }
 
 namespace [% cppNamespace %] {
@@ -264,7 +273,7 @@ namespace [% cppNamespace %] {
 [%- FOREACH file IN files %]
 // [% file.pathNice %]::[% file.filename %]()
 [% FOREACH p IN file.path %]namespace [% p %] { [% END -%]
-template<typename TCtx> inline std::string [% file.filename %]([[maybe_unused]]const TCtx &ctx);
+template<typename TCtx> inline ::tmplInternal::Result [% file.filename %]([[maybe_unused]]const TCtx &ctx);
 [%- END -%]
 [% FOREACH p IN file.path %] }[%- END %]
 
@@ -273,11 +282,11 @@ template<typename TCtx> inline std::string [% file.filename %]([[maybe_unused]]c
 [%- FOREACH file IN files %]
 // [% file.pathNice %]::[% file.filename %]()
 [% FOREACH p IN file.path %]namespace [% p %] { [% END %]
-template<typename TCtx> inline std::string [% file.filename %]([[maybe_unused]]const TCtx &ctx) {
+template<typename TCtx> inline ::tmplInternal::Result [% file.filename %]([[maybe_unused]]const TCtx &ctx) {
     std::string out;
 
 [% file.contents %]
-    return out;
+    return ::tmplInternal::Result{ std::move(out) };
 }
 [% FOREACH p IN file.path %]}[% END -%]
 

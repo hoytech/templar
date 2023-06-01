@@ -9,8 +9,8 @@ Inspired by [hypertextcpp](https://github.com/kamchatka-volcano/hypertextcpp) wi
 * Automatic HTML escaping to protect against XSS bugs
   * The normal `$(...)` replacement will perform escaping, ie convert `<` into `&lt;` etc
   * If the replacement is inside an HTML attribute, single/double quotes are also escaped
-  * If you want to *not* do the escaping, use the form `$!(...)`
-    * Since they return HTML, this is what you should use when calling other templates. For example, here's how use the template in `items/myItem.tmpl` as a sub-template: `$!(items::myItem(ctx.item))`
+  * When using sub-templates, no escaping is performed. For example, to use the template in `items/myItem.tmpl` as a sub-template, this will do the right thing: `$(items::myItem(ctx.item))`
+  * If you want to *not* do the escaping, use the form `$!(...)` (be careful!)
 * Minification: Non-semantic whitespace in the template HTML is (mostly) removed at compile-time
 * Single header output, as opposed to header per template
   * Converts directory structure of templates into namespaces
@@ -22,8 +22,8 @@ Inspired by [hypertextcpp](https://github.com/kamchatka-volcano/hypertextcpp) wi
 * Output headers start with `#pragma once`
 * Parameter struct is named `ctx` not `cfg`
 * Less tested, missing some features
-  * Currently unimplemented: sections, procedures, shared library renderer
-  * A bit more limited in what types `$()` and co can return. It has to be a string/string_view, or have an `std::to_string()` overload
+  * Currently unimplemented: sections (haven't needed it yet), procedures (use sub-templates), shared library renderer (no plans to do this)
+  * A bit more limited in what types `$()` can handle. It has to be a string/string_view, or have an `std::to_string()` overload
 
 ## Dependencies
 
