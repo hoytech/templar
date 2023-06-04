@@ -253,7 +253,7 @@ namespace tmplInternal {
     inline void appendEscape(std::string &out, std::string_view val, bool escapeQuotes) { out += htmlEscape(val, escapeQuotes); }
     inline void appendEscape(std::string &out, const std::string &val, bool escapeQuotes) { out += htmlEscape(val, escapeQuotes); }
     inline void appendEscape(std::string &out, const char *val, bool escapeQuotes) { out += htmlEscape(val, escapeQuotes); }
-    inline void appendEscape(std::string &out, const ::tmplInternal::Result &val, bool escapeQuotes) { out += htmlEscape(val.str, escapeQuotes); }
+    inline void appendEscape(std::string &out, const ::tmplInternal::Result &val, bool escapeQuotes) { out += val.str; }
     template<typename TVal>
     inline void appendEscape(std::string &out, TVal val, bool escapeQuotes) { out += htmlEscape(std::to_string(val), escapeQuotes); }
 
