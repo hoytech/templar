@@ -44,14 +44,11 @@ our $replacementParser;
         <token: tagModifier>
             <before=(\s*)> <mod=([?@])> <parenGroup>
 
-        <token: parenGroup>
-            \( (?: [^()]* <.parenGroup> )* [^()]* \) | <error: Expected matching paren>
-
-
-
-
         <token: fragment>
             <before=([^<>\$]*+)> \$ <noescape=(!?)> <replacement=parenGroup> | <before=([^<>\$]*+ \$?)>
+
+        <token: parenGroup>
+            \( (?: [^()]* <.parenGroup> )* [^()]* \) | <error: Expected matching paren>
     }xs;
 
     $replacementParser = qr{
