@@ -83,12 +83,31 @@ sub emitLiteralWithReplace {
     }
 }
 
+sub emitTag {
+    my ($tagName, $attrs, $o) = @_;
+    $attrs = ($attrs || {})->{attr} || [];
+
+    emitLiteral("<$tagName", $o);
+
+    for my $attr (@$attrs) {
+        if ($attr->{delim}) {
+            emitLiteral(" $attr->{name}=$attr->{delim}", $o);
+            emitLiteralWithReplace($attr->{val}, $o, 1);
+            emitLiteral("$attr->{delim}", $o);
+        } else {
+            emitLiteral(" $attr->{name}", $o);
+        }
+    }
+
+    emitLiteral(">", $o);
+}
+
 sub recurseCpp {
     my ($p, $o) = @_;
 
     return if !ref $p;
 
-    emitLiteralWithReplace($p->{before}, $o) if defined $p->{before};
+    emitLiteralWithReplace($p->{before}->{''}, $o) if defined $p->{before};
 
     die "can't have both pre and post tag modifiers" if $p->{tagModifierPre} && $p->{tagModifierPost};
 
@@ -109,28 +128,16 @@ sub recurseCpp {
     if (defined $p->{verbatimTag}) {
         emitLiteralWithReplace($p->{verbatimTag}, $o, 1);
     } elsif (defined $p->{oTagName}) {
-        emitLiteral("<$p->{oTagName}", $o);
-
-        my $attrs = ($p->{attrList} || {})->{attr} || [];
-
-        for my $attr (@$attrs) {
-            if ($attr->{delim}) {
-                emitLiteral(" $attr->{name}=$attr->{delim}", $o);
-                emitLiteralWithReplace($attr->{val}, $o, 1);
-                emitLiteral("$attr->{delim}", $o);
-            } else {
-                emitLiteral(" $attr->{name}", $o);
-            }
-        }
-
-        emitLiteral(">", $o);
+        emitTag($p->{oTagName}, $p->{attrList}, $o);
+    } elsif (defined $p->{vTagName}) {
+        emitTag($p->{vTagName}, $p->{attrList}, $o);
     }
 
-    emitLiteralWithReplace($p->{beforeInner}, $o) if defined $p->{beforeInner} && $p->{beforeInner} ne '';
+    emitLiteralWithReplace($p->{beforeInner}->{''}, $o) if defined $p->{beforeInner} && $p->{beforeInner} ne '';
 
     for (my $i = 0; $i < @{ $p->{tag} || [] }; $i++) {
         recurseCpp($p->{tag}->[$i], $o);
-        emitLiteralWithReplace($p->{sep}->[$i], $o);
+        emitLiteralWithReplace($p->{sep}->[$i]->{''}, $o);
     }
 
     emitLiteral("</$p->{oTagName}>", $o) if defined $p->{oTagName};

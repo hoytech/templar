@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC
+  "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html lang="en" whatever dir="blah">
+    $(misc::junk::header(ctx.info))
+
+    <div id='a  bef $(ctx.attr) aft'>
+        <img src="/asdf" />
+
+        $(ctx.contents)
+
+        num = $(ctx.num)
+
+
+        <div>
+            $!(ctx.danger)
+        </div>
+
+
+        <p>HIDDEN</p> ?(ctx.showSomething)
+        <p>NOT HIDDEN</p> ?(!ctx.showSomething)
+
+        <p    class="blah"         > ?(ctx.num < 200 && ctx.num > 100)
+            <div>pre</div>
+        </p>
+
+        <p>
+            <div>post</div>
+        </p> ?(ctx.num > 20)
+
+
+        <ul> ?(ctx.items.size())
+          <li>$(i)</li> @(const auto &i : ctx.items)
+        </ul>
+
+        <ul> ?(ctx.items.size() > 1000)
+          <li>$(i)</li> @(const auto &i : ctx.items)
+        </ul>
+
+
+        <!-- comment! -->
+    </div>
+</html>

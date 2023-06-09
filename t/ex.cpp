@@ -5,12 +5,13 @@
 
 int main() {
     struct {
-        std::string attr = "isn't it \n grand?";
+        std::string attr = "isn't it \n <great>?";
         std::string contents = "hello 'doug'! <>";
+        std::string danger = "<h2>DANGER</h2>";
         int num = 123;
 
         struct {
-            std::string header = "MYHEAD > 123";
+            std::string header = "MYHEAD > \"'123'\" < inf";
         } info;
 
         std::vector<double> items = {1.1, 2.2, 3.3};

@@ -4,6 +4,7 @@ use FindBin qw($RealBin);
 use lib "$RealBin/../";
 use Data::Dumper;
 use Template;
+#use Carp::Always;
 
 use Parser;
 
@@ -23,6 +24,7 @@ testHtml(' <div> <br/> </div> ', { eq => ' <div> <br> </div> ', });
 
 testHtml(' <div> <BR> </div> ');
 testHtml(' <div> </DIV> ', { eq => ' <div> </div> ', });
+testHtml(' <div> <img src="/asf"> </div> ');
 
 # modifiers
 
@@ -49,6 +51,11 @@ testHtml('<!doctype>');
 testHtml('<!doctype><html></html>');
 testHtml('<!DOCTYPE "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">');
 testHtml('before <!-- blah blah --> after');
+
+# replacements
+
+testHtml('<div> b $(hi->a > fun(1)) a </div>');
+testHtml('<div> b $(hi->a > fun(1)) mid $(blah()) last </div>');
 
 print "ALL OK\n";
 
@@ -104,9 +111,13 @@ sub reencodeHtml {
 
     my $o = '';
 
-    $o .= $parsed->{before} if defined $parsed->{before};
+    $o .= $parsed->{before}->{''} if defined $parsed->{before};
 
-    $o .= encodeTag($parsed->{oTagName}, $parsed->{attrList}) if defined $parsed->{oTagName};
+    if (defined $parsed->{oTagName}) {
+        $o .= encodeTag($parsed->{oTagName}, $parsed->{attrList})
+    } elsif (defined $parsed->{vTagName}) {
+        $o .= encodeTag($parsed->{vTagName}, $parsed->{attrList})
+    }
 
     if (defined $parsed->{tagModifierPre}) {
         my $tm = $parsed->{tagModifierPre};
@@ -114,18 +125,16 @@ sub reencodeHtml {
         $stats->{tagModifierPre}++;
     }
 
-    $o .= $parsed->{beforeInner} || '';
+    $o .= $parsed->{beforeInner}->{''} || '';
 
     for (my $i = 0; $i < @{ $parsed->{tag} || [] }; $i++) {
-        $o .= reencodeHtml($parsed->{tag}->[$i], $stats) . $parsed->{sep}->[$i];
+        $o .= reencodeHtml($parsed->{tag}->[$i], $stats) . $parsed->{sep}->[$i]->{''};
     }
 
     if (defined $parsed->{verbatimTag}) {
         $o .= $parsed->{verbatimTag};
     } elsif (defined $parsed->{oTagName}) {
         $o .= "</$parsed->{oTagName}>";
-    } elsif (defined $parsed->{vTagName}) {
-        $o .= "<$parsed->{vTagName}>";
     }
 
     if (defined $parsed->{tagModifierPost}) {

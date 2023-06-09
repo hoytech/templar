@@ -17,12 +17,12 @@ our $replacementParser;
             (?:
                 <verbatimTag=(\< ! [^<>]* \>)>
                 |
+                \< \s* <vTagName=voidTagName> \s* <attrList> /?+ \s* \>
+                |
                 \< \s* <oTagName=tagName> \s* <attrList> /?+ \s* \>
                     <tagModifierPre=tagModifier>?
                     <beforeInner=text> <[tag]>* %% <[sep=text]>
                 (?: \< \s*+ / \s*+ (?:(?i)<cTagName=\_oTagName>) \s*+ \> | <error: (?{ "Expected closing tag for <$MATCH{oTagName}>" })> )
-                |
-                \< \s* <vTagName=voidTagName> \s* <attrList> /?+ \s* \>
             )
             <tagModifierPost=tagModifier>?
 
@@ -39,13 +39,19 @@ our $replacementParser;
             <name=([\w-_]+)> (?: = <delim=(')> <val=([^']*)> ' | = <delim=(")> <val=([^"]*)> " | )
 
         <token: text>
-            [^<>]*
+            <[fragment]>*
 
         <token: tagModifier>
             <before=(\s*)> <mod=([?@])> <parenGroup>
 
         <token: parenGroup>
             \( (?: [^()]* <.parenGroup> )* [^()]* \) | <error: Expected matching paren>
+
+
+
+
+        <token: fragment>
+            <before=([^<>\$]*+)> \$ <noescape=(!?)> <replacement=parenGroup> | <before=([^<>\$]*+ \$?)>
     }xs;
 
     $replacementParser = qr{
