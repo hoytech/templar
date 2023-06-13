@@ -178,13 +178,13 @@ sub renderCpp {
 
             $l =~ s/"/\\"/g;
             $l =~ s/\n/\\n/g;
-            $renderStr .= qq{    ::tmplInternal::appendRaw(out, "$l");\n};
+            $renderStr .= qq{    ::templarInternal::appendRaw(out, "$l");\n};
         } elsif (defined $item->{replacement}) {
             if ($item->{isRaw}) {
-                $renderStr .= qq{    ::tmplInternal::appendRaw(out, $item->{replacement});\n};
+                $renderStr .= qq{    ::templarInternal::appendRaw(out, $item->{replacement});\n};
             } else {
                 my $isAttr = $item->{isAttr} ? 'true' : 'false';
-                $renderStr .= qq{    ::tmplInternal::appendEscape(out, $item->{replacement}, $isAttr);\n};
+                $renderStr .= qq{    ::templarInternal::appendEscape(out, $item->{replacement}, $isAttr);\n};
             }
         } elsif (defined $item->{raw}) {
             $renderStr .= qq{$item->{raw}\n};
@@ -221,11 +221,11 @@ __DATA__
 #include <string>
 #include <string_view>
 
-namespace tmplInternal {
-    struct Result {
-        std::string str;
-    };
+struct TemplarResult {
+    std::string str;
+};
 
+namespace templarInternal {
     inline std::string htmlEscape(std::string_view data, bool escapeQuotes) {
         std::string buffer;
         buffer.reserve(data.size() * 11 / 10);
@@ -260,7 +260,7 @@ namespace tmplInternal {
     inline void appendEscape(std::string &out, std::string_view val, bool escapeQuotes) { out += htmlEscape(val, escapeQuotes); }
     inline void appendEscape(std::string &out, const std::string &val, bool escapeQuotes) { out += htmlEscape(val, escapeQuotes); }
     inline void appendEscape(std::string &out, const char *val, bool escapeQuotes) { out += htmlEscape(val, escapeQuotes); }
-    inline void appendEscape(std::string &out, const ::tmplInternal::Result &val, bool escapeQuotes) { out += val.str; }
+    inline void appendEscape(std::string &out, const TemplarResult &val, bool escapeQuotes) { out += val.str; }
     template<typename TVal>
     inline void appendEscape(std::string &out, TVal val, bool escapeQuotes) { out += htmlEscape(std::to_string(val), escapeQuotes); }
 
@@ -280,7 +280,7 @@ namespace [% cppNamespace %] {
 [%- FOREACH file IN files %]
 // [% file.pathNice %]::[% file.filename %]()
 [% FOREACH p IN file.path %]namespace [% p %] { [% END -%]
-template<typename TCtx> inline ::tmplInternal::Result [% file.filename %]([[maybe_unused]]const TCtx &ctx);
+template<typename TCtx> inline TemplarResult [% file.filename %]([[maybe_unused]]const TCtx &ctx);
 [%- END -%]
 [% FOREACH p IN file.path %] }[%- END %]
 
@@ -289,11 +289,11 @@ template<typename TCtx> inline ::tmplInternal::Result [% file.filename %]([[mayb
 [%- FOREACH file IN files %]
 // [% file.pathNice %]::[% file.filename %]()
 [% FOREACH p IN file.path %]namespace [% p %] { [% END %]
-template<typename TCtx> inline ::tmplInternal::Result [% file.filename %]([[maybe_unused]]const TCtx &ctx) {
+template<typename TCtx> inline TemplarResult [% file.filename %]([[maybe_unused]]const TCtx &ctx) {
     std::string out;
 
 [% file.contents %]
-    return ::tmplInternal::Result{ std::move(out) };
+    return TemplarResult{ std::move(out) };
 }
 [% FOREACH p IN file.path %]}[% END -%]
 
