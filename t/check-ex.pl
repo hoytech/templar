@@ -45,8 +45,13 @@ check(qq{<p> <div>post</div> </p>});
 ## For loop
 check(qq{<ul> <li>1.100000</li><li>2.200000</li><li>3.300000</li> </ul>});
 
-## Wrap up
+## Comment
 check(qq{<!-- comment! -->});
+
+## Null tags
+check(qq{<div>HI!</div>});
+check(qq{I am <b>here</b>});
+check(qq{<div> 1234 </div>});
 
 ## Wrap up
 check(qq{</div> </html>});

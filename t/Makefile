@@ -3,7 +3,7 @@ test: ex
 	perl replacement.pl
 	./ex |perl check-ex.pl
 
-ex: ex.cpp $(shell find tmpls/ -type f -name '*.tmpl')
+ex: ../templar.pl ../Parser.pm ex.cpp $(shell find tmpls/ -type f -name '*.tmpl')
 	perl ../templar.pl tmpls/ tmpl mytmpls.h
 	g++ -Wall -std=c++17 ex.cpp -o ex
 

@@ -15,11 +15,16 @@ our $replacementParser;
 
         <token: tag>
             (?:
-                <verbatimTag=(\< ! [^<>]* \>)>
+                <verbatimTag=(\< ! [^<>]*+ \>)>
                 |
-                \< \s* <vTagName=voidTagName> \s* <attrList> /?+ \s* \>
+                \< \s*+ <vTagName=voidTagName> \s*+ <attrList> /?+ \s*+ \>
                 |
-                \< \s* <oTagName=tagName> \s* <attrList> /?+ \s* \>
+                \<\>
+                    <tagModifierPre=tagModifier>?
+                    <beforeInner=text> <[tag]>* %% <[sep=text]>
+                \</\>
+                |
+                \< \s*+ <oTagName=tagName> \s*+ <attrList> /?+ \s*+ \>
                     <tagModifierPre=tagModifier>?
                     <beforeInner=text> <[tag]>* %% <[sep=text]>
                 (?: \< \s*+ / \s*+ (?:(?i)<cTagName=\_oTagName>) \s*+ \> | <error: (?{ "Expected closing tag for <$MATCH{oTagName}>" })> )

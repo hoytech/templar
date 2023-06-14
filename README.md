@@ -11,6 +11,7 @@ Inspired by [hypertextcpp](https://github.com/kamchatka-volcano/hypertextcpp) wi
   * If the replacement is inside an HTML attribute, single/double quotes are also escaped
   * When using sub-templates, no escaping is performed. For example, to use the template in `items/myItem.tmpl` as a sub-template, this will do the right thing: `$(items::myItem(ctx.item))`
   * If you want to *not* do the escaping, use the form `$!(...)` (be careful!)
+* React-style empty tags `<>...</>` for grouping items in conditions or loops without requiring enclosing tag
 * Minification: Non-semantic whitespace in the template HTML is (mostly) removed at compile-time
 * Single header output, as opposed to header per template
   * Converts directory structure of templates into namespaces
