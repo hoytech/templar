@@ -13,7 +13,7 @@ my $inp;
 check(qq{<!DOCTYPE html PUBLIC\n  "-//W3C//DTD XHTML 1.0 Transitional//EN"\n  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">});
 
 ## attributes
-check(qq{<html lang="en" whatever dir="blah">});
+check(qq{<html lang="en" whatever dir=" attr   goes here ">});
 
 ## Calling sub-template
 check(qq{<div class="header">});

@@ -160,25 +160,61 @@ sub renderCpp {
         die "Parse error: " . Dumper(\@!);
     }
 
-    my $oCompressed = [];
 
-    for my $item (@$o) {
-        if (defined $item->{literal} && @$oCompressed && defined $oCompressed->[-1]->{literal} && $item->{isAttr} == $oCompressed->[-1]->{isAttr}) {
-            $oCompressed->[-1]->{literal} .= $item->{literal};
-        } else {
-            push @$oCompressed, $item;
+    ## Pass 1: merge adjacent literals of same attribute class (attr vs non-attr)
+
+    {
+        my $o2 = [];
+
+        for my $item (@$o) {
+            if (defined $item->{literal} && @$o2 && defined $o2->[-1]->{literal} && $item->{isAttr} == $o2->[-1]->{isAttr}) {
+                $o2->[-1]->{literal} .= $item->{literal};
+            } else {
+                push @$o2, $item;
+            }
         }
+
+        $o = $o2;
     }
 
-    my $renderStr = '';
-    for my $item (@$oCompressed) {
+
+    ## Pass 2: Collapse whitespace, do C++ string escaping
+
+    for my $item (@$o) {
         if (defined $item->{literal}) {
             my $l = $item->{literal};
+
             $l =~ s/\s+/ /g if !$item->{isAttr}; # minify whitespace, except in attributes
 
             $l =~ s/"/\\"/g;
             $l =~ s/\n/\\n/g;
-            $renderStr .= qq{    ::templarInternal::appendRaw(out, "$l");\n};
+
+            $item->{literal} = $l;
+        }
+    }
+
+
+    ## Pass 3: Merge all adjacent literals (ignore attribute class)
+
+    {
+        my $o2 = [];
+
+        for my $item (@$o) {
+            if (defined $item->{literal} && @$o2 && defined $o2->[-1]->{literal}) {
+                $o2->[-1]->{literal} .= $item->{literal};
+            } else {
+                push @$o2, $item;
+            }
+        }
+
+        $o = $o2;
+    }
+
+
+    my $renderStr = '';
+    for my $item (@$o) {
+        if (defined $item->{literal}) {
+            $renderStr .= qq{    ::templarInternal::appendRaw(out, "$item->{literal}");\n} if length($item->{literal});
         } elsif (defined $item->{replacement}) {
             if ($item->{isRaw}) {
                 $renderStr .= qq{    ::templarInternal::appendRaw(out, $item->{replacement});\n};
