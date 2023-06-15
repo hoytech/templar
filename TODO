@@ -1,0 +1,2 @@
+bugs
+  Can't have a delimiter inside a replacement inside an attribute, ie: <div class="$(ctx.get("name"))">
