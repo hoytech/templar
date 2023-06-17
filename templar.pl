@@ -317,8 +317,8 @@ namespace [% cppNamespace %] {
 // [% file.pathNice %]::[% file.filename %]()
 [% FOREACH p IN file.path %]namespace [% p %] { [% END -%]
 template<typename TCtx> inline TemplarResult [% file.filename %]([[maybe_unused]]const TCtx &ctx);
+[%- FOREACH p IN file.path %] }[%- END %]
 [%- END -%]
-[% FOREACH p IN file.path %] }[%- END %]
 
 //////// Definitions
 
