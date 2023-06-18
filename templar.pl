@@ -74,9 +74,16 @@ sub emitLiteralWithReplace {
     if ($l =~ $Parser::replacementParser) {
         my $parsed = \%/;
         for my $frag (@{ $parsed->{fragment} }) {
-            my $isRaw = $frag->{noescape};
             push @$o, { literal => $frag->{before}, isAttr => !!$isAttr, };
-            push @$o, { replacement => $frag->{replacement}, isRaw => !!$isRaw, isAttr => !!$isAttr, } if defined $frag->{replacement};
+
+            next if !defined $frag->{replacement};
+
+            if ($frag->{replaceType} eq ';') {
+                push @$o, { statement => $frag->{replacement}, };
+            } else {
+                my $isRaw = $frag->{replaceType} eq '!';
+                push @$o, { replacement => $frag->{replacement}, isRaw => !!$isRaw, isAttr => !!$isAttr, };
+            }
         }
     } else {
         die "Parse error in replacement: " . Dumper(\@!);
@@ -215,6 +222,9 @@ sub renderCpp {
     for my $item (@$o) {
         if (defined $item->{literal}) {
             $renderStr .= qq{    ::templarInternal::appendRaw(out, "$item->{literal}");\n} if length($item->{literal});
+        } elsif (defined $item->{statement}) {
+            my $statement = substr($item->{statement}, 1, length($item->{statement}) - 2); # remove ( and )
+            $renderStr .= qq{    $statement\n};
         } elsif (defined $item->{replacement}) {
             if ($item->{isRaw}) {
                 $renderStr .= qq{    ::templarInternal::appendRaw(out, $item->{replacement});\n};

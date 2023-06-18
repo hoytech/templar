@@ -50,7 +50,7 @@ our $replacementParser;
             <before=(\s*)> <mod=([?@])> <parenGroup>
 
         <token: fragment>
-            <before=([^<>\$]*+)> \$ <noescape=(!?)> <replacement=parenGroup> | <before=([^<>\$]*+ \$?)>
+            <before=([^<>\$]*+)> \$ <replaceType=([!;]?)> <replacement=parenGroup> | <before=([^<>\$]*+ \$?)>
 
         <token: parenGroup>
             \( (?: [^()]* <.parenGroup> )* [^()]* \) | <error: Expected matching paren>
@@ -60,7 +60,7 @@ our $replacementParser;
         ^ <[fragment]>* $
 
         <token: fragment>
-            <before=([^\$]*+)> \$ <noescape=(!?)> <replacement=parenGroup> | <before=([^\$]*+ \$?)>
+            <before=([^\$]*+)> \$ <replaceType=([!;]?)> <replacement=parenGroup> | <before=([^\$]*+ \$?)>
 
         <token: parenGroup>
             \( (?: [^()]* <.parenGroup> )* [^()]* \) | <error: Expected matching paren>

@@ -61,7 +61,7 @@ sub reencodeReplacement {
         $o .= $f->{before};
         if (defined $f->{replacement}) {
             $o .= '$';
-            $o .= '!' if $f->{noescape};
+            $o .= $f->{replaceType} || '';
             $o .= $f->{replacement}; 
             $numReplacements++;
         }
