@@ -41,7 +41,7 @@ our $replacementParser;
             <[attr]>* %% \s*
 
         <token: attr>
-            <name=([\w-_]+)> (?: = <delim=(')> <val=([^']*)> ' | = <delim=(")> <val=([^"]*)> " | )
+            <name=([\w-_\@:.]+)> (?: = <delim=(')> <val=([^']*)> ' | = <delim=(")> <val=([^"]*)> " | )
 
         <token: text>
             <[fragment]>*
